@@ -8,9 +8,10 @@
         public static void init()
         {
             cheatobj = new GameObject();
+            UnityEngine.Object.DontDestroyOnLoad(cheatobj);
             //then add component of our class to this
             cheatobj.AddComponent<cheatmanager>();
-            UnityEngine.Object.DontDestroyOnLoad(cheatobj);
+            
         }
     }
 }
