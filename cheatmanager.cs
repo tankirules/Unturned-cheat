@@ -32,6 +32,14 @@ namespace Unturned_Cheat
             //offset the y position since the gameobject is at their feet
             zombiepos.y = zombiepos.y + 2.5f;
             Vector3 pos = Camera.main.WorldToScreenPoint(zombiepos);
+            //check if the label is "behind" the camera
+            //if so, do not render!
+            if (pos.z < 0)
+            {
+                return;
+            }
+
+
             //IMPORTANT! World to sreenpoint puts 0,0 at bottom left!
 
             GUI.color = Color.yellow;
@@ -44,7 +52,7 @@ namespace Unturned_Cheat
 
             pos.y = Screen.height - pos.y;
 
-            Rect rectangle = new Rect(pos.x, pos.y, size.x,size.y);
+            Rect rectangle = new Rect(pos.x - size.x / 2, pos.y, size.x,size.y);
 
             GUI.Label(rectangle, gc);
 
