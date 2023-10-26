@@ -1,17 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net4.0</TargetFramework>
+    <TargetFramework>net45</TargetFramework>
     <RootNamespace>Unturned_Cheat</RootNamespace>
     <ImplicitUsings>disable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>lib\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>G:\SteamLibrary\steamapps\common\Unturned\Unturned_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="HighlightingSystem">
+      <HintPath>G:\SteamLibrary\steamapps\common\Unturned\Unturned_Data\Managed\HighlightingSystem.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>G:\SteamLibrary\steamapps\common\Unturned\Unturned_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>G:\SteamLibrary\steamapps\common\Unturned\Unturned_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>G:\SteamLibrary\steamapps\common\Unturned\Unturned_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
