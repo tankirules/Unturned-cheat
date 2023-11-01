@@ -22,6 +22,11 @@ namespace Unturned_Cheat
 
         public float zombiedistance = 60;
         public float vehicledistance = 120;
+
+        void Awake()
+        {
+            DontDestroyOnLoad(this);
+        }
         void Start()
         {
             File.WriteAllText("UC.txt", "Cheat Loaded!\n");
@@ -42,27 +47,36 @@ namespace Unturned_Cheat
 
             if (!Provider.isConnected)
             {
+                zombielist.Clear();
+                vehicles.Clear();
                 GUI.color = Color.red;
                 GUI.Label(new Rect(400f, 0f, 200f, 40f), "NOT connected!");
                 return;
             }
-            
-            //draw zombies
-            foreach (Zombie z in zombielist)
+            else
             {
-                ESP.drawzombielabel(z);
-                ESP.renderzombie(z);
+
+                //File.AppendAllText("UC.txt", "numzombie : " + zombielist.Count + " numveh: " + vehicles.Count + "\n");
+                //draw zombies
+                foreach (Zombie z in zombielist)
+                {
+                    ESP.drawzombielabel(z);
+                    ESP.renderzombie(z);
+                }
+
+                //draw vehicles
+                foreach (InteractableVehicle v in vehicles)
+                {
+                    ESP.drawvehiclelabel(v);
+                    ESP.rendervehicle(v);
+                }
+
+
+                //TODO: HANDLE PLAYERS
+                //File.AppendAllText("UC.txt", "clients size is: " + players.Count);
             }
 
-            //draw vehicles
-            foreach (InteractableVehicle v in vehicles)
-            {
-                ESP.drawvehiclelabel(v);
-            }
 
-
-            //TODO: HANDLE PLAYERS
-            File.AppendAllText("UC.txt", "clients size is: " + players.Count);
         }
 
         //coroutine for checking objects
@@ -70,11 +84,30 @@ namespace Unturned_Cheat
         {
             while (true)
             {
-                
-                if (Provider.isConnected)
+                //AppendAllText("UC.txt", "coroutine running\n");
+                if (Provider.isConnected && Player.player != null)
                 {
+                    //File.AppendAllText("UC.txt", "checking objects");
+                    
+                    //try 
+                    //{
+                    //    Vector3 pp = Player.player.transform.position;
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    File.AppendAllText("UC.txt", "Exception: " + e + "\n");
+                    //    continue;
+                    //}
+
+
                     Vector3 playerpos = Player.player.transform.position;
+                    if (playerpos == null)
+                    {
+                        //File.AppendAllText("UC.txt", "palyerpos is null!\n");
+                        continue;
+                    }
                     Vector2 playerpos2d = new Vector2(playerpos.x, playerpos.z);
+                    //File.AppendAllText("UC.txt", "before zombie check\n");
                     #region Zombiecheck
                     //List<Zombie> tempz = new List<Zombie>();
                     zombielist.Clear();                    
@@ -111,6 +144,7 @@ namespace Unturned_Cheat
                     //File.AppendAllText("UC.txt", "is regions[nav] null? " + (ZombieManager.regions[nav] == null) + "\n");
                     //File.AppendAllText("UC.txt", "is regions[nav].zombies null? " + (ZombieManager.regions[nav].zombies == null) + "\n");
                     #endregion
+                    //File.AppendAllText("UC.txt", "before vehicle check\n");
                     #region Vehiclecheck
                     vehicles.Clear();
                     foreach (InteractableVehicle v in VehicleManager.vehicles)
@@ -129,11 +163,12 @@ namespace Unturned_Cheat
                     }
 
                     #endregion
+                    //File.AppendAllText("UC.txt", "After Vehicle Check\n");
 
                 }
-                //Debug.Log("checking zombies!");
 
 
+                
                 yield return new WaitForSeconds(4f);
             }
 

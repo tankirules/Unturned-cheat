@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using System.IO;
 
 namespace Unturned_Cheat
 {
@@ -82,7 +83,7 @@ namespace Unturned_Cheat
 
             foreach (Renderer re in r)
             {
-
+                //File.AppendAllText("UC.txt", "Num of renderer for zombie: " + r.Length + "\n");
                 //rm.renderQueue = 4000;
                 //File.AppendAllText("UC.txt", "mat name: " + rm.ToString() + "\n");
                 //File.AppendAllText("UC.txt", "rm renderqueue :" + rm.renderQueue + "\n");
@@ -92,7 +93,7 @@ namespace Unturned_Cheat
                 //THIS WORKS!!!!
                 Shader shader = Shader.Find("Hidden/Internal-Colored");
                 Material mat = new Material(shader);
-                mat.color = new Color(115, 135, 105);
+                mat.SetColor("_Color", new Color32(115, 135, 105,255));
                 mat.renderQueue = 4000;
                 mat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
                 mat.SetInt("_ZWrite", 0);
@@ -109,6 +110,7 @@ namespace Unturned_Cheat
 
             }
 
+            //draw a highlight outline around the zombies
             Highlighter highlighter = z.transform.GetComponent<Highlighter>();
             if (highlighter == null)
             {
@@ -147,20 +149,23 @@ namespace Unturned_Cheat
 
         public static void drawvehiclelabel(InteractableVehicle v)
         {
+
+            //get vehicle name and position
             Vector3 vpos = v.transform.position;
             String vname = v.asset.vehicleName;
 
-            //translate vehicle pos to screen
+            //translate vehicle position to screen coordinates
             Vector3 pos = Camera.main.WorldToScreenPoint(vpos);
+
             //check if the label is "behind" the camera
             //if so, do not render!
             if (pos.z < 0)
             {
                 return;
             }
-
-            GUI.color = Color.green;
-            //var dist = Vector3.Distance(zombiepos, Player.player.transform.position);
+            
+            //set GUI colouor and content
+            GUI.color = Color.black;
             GUIContent gc = new GUIContent("Vehicle: " + v.asset.vehicleName);
 
             GUIStyle gs = GUI.skin.label;
@@ -168,13 +173,40 @@ namespace Unturned_Cheat
             gs.fontSize = 14;
             Vector2 size = gs.CalcSize(gc);
 
+            //Invert y coords since WorldToScreenPoint returns inverted y coordinates
             pos.y = Screen.height - pos.y;
 
             Rect rectangle = new Rect(pos.x - size.x / 2, pos.y, size.x, size.y);
-
+            //draw the label
             GUI.Label(rectangle, gc);
 
 
+        }
+        public static void rendervehicle(InteractableVehicle v)
+        {
+            Renderer[] r = v.GetComponentsInChildren<Renderer>();
+            //File.AppendAllText("UC.txt", "num of renderer for vehicle: " + r.Length + "\n");
+            foreach (Renderer re in r)
+            {
+                Shader shader = Shader.Find("Hidden/Internal-Colored");
+                Material mat = new Material(shader);
+                mat.SetColor("_Color", Color.green);
+                mat.renderQueue = 4000;
+                mat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+                mat.SetInt("_ZWrite", 0);
+                mat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+                re.material = mat;
+            }
+
+            var rp = v.GetComponent<Renderer>();
+            var rt = v.transform.GetComponent<Renderer>();
+            File.AppendAllText("UC.txt", "rp is n " + (rp == null) + " and rt is n " + (rt == null) + "\n");
+            foreach (Transform child in v.transform)
+            {
+                File.AppendAllText("UC.txt", child.name + " is n " + (child.GetComponent<Renderer>() == null) + "\n");
+            }
+
+                
         }
     }
 }
