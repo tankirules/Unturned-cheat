@@ -17,17 +17,19 @@ namespace Unturned_Cheat
     {
         public List<Zombie> zombielist = new List<Zombie>();
         public List<SteamPlayer> players = new List<SteamPlayer>();
+        public List<InteractableVehicle> vehicles = new List<InteractableVehicle>();
 
 
         public float zombiedistance = 60;
+        public float vehicledistance = 120;
         void Start()
         {
             File.WriteAllText("UC.txt", "Cheat Loaded!\n");
             Debug.Log("Cheat loaded!");
             //GUI.color = Color.cyan;
             //GUI.Label(new Rect(200f, 0f, 200f, 40f), "HACK INJCETED");
-            StartCoroutine(zombiecheck());
-            StartCoroutine(playercheck());
+            StartCoroutine(objectcheck());
+            //StartCoroutine(playercheck());
 
         }
 
@@ -45,11 +47,17 @@ namespace Unturned_Cheat
                 return;
             }
             
-            //handle zombies
+            //draw zombies
             foreach (Zombie z in zombielist)
             {
                 ESP.drawzombielabel(z);
                 ESP.renderzombie(z);
+            }
+
+            //draw vehicles
+            foreach (InteractableVehicle v in vehicles)
+            {
+                ESP.drawvehiclelabel(v);
             }
 
 
@@ -57,18 +65,19 @@ namespace Unturned_Cheat
             File.AppendAllText("UC.txt", "clients size is: " + players.Count);
         }
 
-        //coroutine for checking zombie positions
-        IEnumerator zombiecheck()
+        //coroutine for checking objects
+        IEnumerator objectcheck()
         {
             while (true)
             {
                 
                 if (Provider.isConnected)
                 {
-                    //List<Zombie> tempz = new List<Zombie>();
-                    zombielist.Clear();
                     Vector3 playerpos = Player.player.transform.position;
                     Vector2 playerpos2d = new Vector2(playerpos.x, playerpos.z);
+                    #region Zombiecheck
+                    //List<Zombie> tempz = new List<Zombie>();
+                    zombielist.Clear();                    
 
                     foreach (Zombie z in FindObjectsOfType<Zombie>())
                     {
@@ -80,7 +89,7 @@ namespace Unturned_Cheat
                         }
                         Vector3 zombiepos = z.transform.position;
                         Vector2 zombiepos2d = new Vector2(zombiepos.x, zombiepos.z);
-                        //check if zombie is too far, dont add to list
+                        //check if zombie is too far from player, and don't add to list if so
                         if (Vector2.Distance(playerpos2d,zombiepos2d) > zombiedistance)
                         {
                             continue;
@@ -101,6 +110,25 @@ namespace Unturned_Cheat
                     //File.AppendAllText("UC.txt", "lv is : " + lv + "\n" + "nav is : " + nav + "\n");
                     //File.AppendAllText("UC.txt", "is regions[nav] null? " + (ZombieManager.regions[nav] == null) + "\n");
                     //File.AppendAllText("UC.txt", "is regions[nav].zombies null? " + (ZombieManager.regions[nav].zombies == null) + "\n");
+                    #endregion
+                    #region Vehiclecheck
+                    vehicles.Clear();
+                    foreach (InteractableVehicle v in VehicleManager.vehicles)
+                    {
+                        //check if vehicle is locked and inside distance
+                        Vector3 vpos = v.transform.position;
+                        Vector2 vpos2d = new Vector2(vpos.x, vpos.z);
+
+                        //if vehicle is locked or outside range, ignore it
+                        if (v.isLocked || (Vector2.Distance(playerpos2d, vpos2d) > vehicledistance))
+                        {
+                            continue;
+                        }
+
+                        vehicles.Add(v);
+                    }
+
+                    #endregion
 
                 }
                 //Debug.Log("checking zombies!");
@@ -112,20 +140,20 @@ namespace Unturned_Cheat
             
         }
 
-        IEnumerator playercheck()
-        {
-            while (true) {
-                players.Clear();
-                if (Provider.isConnected) {
-                    foreach (SteamPlayer SP in Provider.clients)
-                    {
-                        players.Add(SP);
-                    }
-                }
+        //IEnumerator playercheck()
+        //{
+        //    while (true) {
+        //        players.Clear();
+        //        if (Provider.isConnected) {
+        //            foreach (SteamPlayer SP in Provider.clients)
+        //            {
+        //                players.Add(SP);
+        //            }
+        //        }
                 
-                yield return new WaitForSeconds(4f);
-            }
-        }
+        //        yield return new WaitForSeconds(4f);
+        //    }
+        //}
 
     }
 }

@@ -115,6 +115,8 @@ namespace Unturned_Cheat
                 highlighter = z.transform.gameObject.AddComponent<Highlighter>();
             }
             highlighter.ConstantOn(Color.yellow);
+            //highlighter.occluder = true;
+            //highlighter.overlay = true;
 
             //try to cheese the higlighter render?
             //Renderer[] stupidr = highlighter.GetComponentsInChildren<Renderer>();
@@ -139,6 +141,38 @@ namespace Unturned_Cheat
             //zm.renderQueue = 4000;
 
 
+
+
+        }
+
+        public static void drawvehiclelabel(InteractableVehicle v)
+        {
+            Vector3 vpos = v.transform.position;
+            String vname = v.asset.vehicleName;
+
+            //translate vehicle pos to screen
+            Vector3 pos = Camera.main.WorldToScreenPoint(vpos);
+            //check if the label is "behind" the camera
+            //if so, do not render!
+            if (pos.z < 0)
+            {
+                return;
+            }
+
+            GUI.color = Color.green;
+            //var dist = Vector3.Distance(zombiepos, Player.player.transform.position);
+            GUIContent gc = new GUIContent("Vehicle: " + v.asset.vehicleName);
+
+            GUIStyle gs = GUI.skin.label;
+            gs.alignment = TextAnchor.MiddleCenter;
+            gs.fontSize = 14;
+            Vector2 size = gs.CalcSize(gc);
+
+            pos.y = Screen.height - pos.y;
+
+            Rect rectangle = new Rect(pos.x - size.x / 2, pos.y, size.x, size.y);
+
+            GUI.Label(rectangle, gc);
 
 
         }
