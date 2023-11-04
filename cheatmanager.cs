@@ -16,12 +16,14 @@ namespace Unturned_Cheat
     public class cheatmanager : MonoBehaviour
     {
         public List<Zombie> zombielist = new List<Zombie>();
-        public List<SteamPlayer> players = new List<SteamPlayer>();
+        public List<Player> players = new List<Player>();
         public List<InteractableVehicle> vehicles = new List<InteractableVehicle>();
+        public List<InteractableItem> items = new List<InteractableItem>();
 
 
         public float zombiedistance = 60;
         public float vehicledistance = 120;
+        public float itemdistance = 60;
 
         void Awake()
         {
@@ -70,7 +72,27 @@ namespace Unturned_Cheat
                     ESP.drawvehiclelabel(v);
                     ESP.rendervehicle(v);
                 }
+                
+                //draw items
+                foreach (InteractableItem i in items)
+                {
+                    if (i == null)
+                    {
+                        continue;
+                    }
+                    ESP.drawitemlabel(i);
+                    if (i.asset.rarity >= EItemRarity.RARE || i.asset.type == EItemType.GUN)
+                    {
+                        ESP.renderitem(i);
+                    }
+                    
+                }
 
+                foreach (Player p in players)
+                {
+                    ESP.drawplayerlabel(p);
+                    ESP.renderplayer(p);
+                }
 
                 //TODO: HANDLE PLAYERS
                 //File.AppendAllText("UC.txt", "clients size is: " + players.Count);
@@ -164,31 +186,37 @@ namespace Unturned_Cheat
 
                     #endregion
                     //File.AppendAllText("UC.txt", "After Vehicle Check\n");
+                    #region itemcheck
+                    items.Clear();
+                    ItemManager.findSimulatedItemsInRadius(playerpos, itemdistance * itemdistance, items);
+                    File.AppendAllText("UC.txt", "item list size is: " + items.Count + "\n");
+                    #endregion
+
+                    #region playercheck
+
+                    players.Clear();
+                    foreach (SteamPlayer sp in Provider.clients)
+                    {
+                        if (sp.player != Player.player)
+                        {
+                            players.Add(sp.player);
+                        }
+                    }
+
+                    #endregion
+
 
                 }
 
 
-                
+
                 yield return new WaitForSeconds(4f);
             }
 
             
         }
 
-        //IEnumerator playercheck()
-        //{
-        //    while (true) {
-        //        players.Clear();
-        //        if (Provider.isConnected) {
-        //            foreach (SteamPlayer SP in Provider.clients)
-        //            {
-        //                players.Add(SP);
-        //            }
-        //        }
-                
-        //        yield return new WaitForSeconds(4f);
-        //    }
-        //}
+       
 
     }
 }

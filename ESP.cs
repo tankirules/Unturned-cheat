@@ -38,6 +38,7 @@ namespace Unturned_Cheat
             gs.fontSize = 14;
             Vector2 size = gs.CalcSize(gc);
 
+            //flip the y position 
             pos.y = Screen.height - pos.y;
 
             Rect rectangle = new Rect(pos.x - size.x / 2, pos.y, size.x, size.y);
@@ -93,7 +94,7 @@ namespace Unturned_Cheat
                 //THIS WORKS!!!!
                 Shader shader = Shader.Find("Hidden/Internal-Colored");
                 Material mat = new Material(shader);
-                mat.SetColor("_Color", new Color32(115, 135, 105,255));
+                mat.SetColor("_Color", new Color32(115, 135, 105, 255));
                 mat.renderQueue = 4000;
                 mat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
                 mat.SetInt("_ZWrite", 0);
@@ -163,7 +164,7 @@ namespace Unturned_Cheat
             {
                 return;
             }
-            
+
             //set GUI colouor and content
             GUI.color = Color.black;
             GUIContent gc = new GUIContent("Vehicle: " + v.asset.vehicleName);
@@ -209,26 +210,126 @@ namespace Unturned_Cheat
 
             foreach (Transform t in v.transform)
             {
-                if (t.name == "Model_0")
+                if (t.name == "Model_0" || t.name == "Model_1")
                 {
                     Renderer re = t.GetComponent<Renderer>();
-                    Shader shader = Shader.Find("Hidden/Internal-Colored");
-                    Material mat = new Material(shader);
-                    mat.SetColor("_Color", Color.green);
-                    mat.renderQueue = 4000;
-                    mat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
-                    mat.SetInt("_ZWrite", 0);
-                    mat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
-                    re.material = mat;
+                    if (re != null)
+                    {
+                        Shader shader = Shader.Find("Hidden/Internal-Colored");
+                        Material mat = new Material(shader);
+                        mat.SetColor("_Color", Color.yellow);
+                        mat.renderQueue = 4000;
+                        mat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+                        mat.SetInt("_ZWrite", 0);
+                        mat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+                        re.material = mat;
+                    }
+
 
                 }
             }
 
-            //testing
 
 
 
-                
+
+        }
+
+        public static void drawitemlabel(InteractableItem i)
+        {
+            Vector3 itempos = i.gameObject.transform.position;
+            Vector3 pos = Camera.main.WorldToScreenPoint(itempos);
+            //check if the label is "behind" the camera
+            //if so, do not render!
+            if (pos.z < 0)
+            {
+                return;
+            }
+            GUI.color = Color.green;
+            GUIContent gc = new GUIContent(i.asset.rarity + " Item: " + i.asset.itemName);
+            GUIStyle gs = GUI.skin.label;
+            gs.alignment = TextAnchor.MiddleCenter;
+            gs.fontSize = 14;
+            Vector2 size = gs.CalcSize(gc);
+            pos.y = Screen.height - pos.y;
+
+
+            Rect rectangle = new Rect(pos.x - size.x / 2, pos.y, size.x, size.y);
+
+            GUI.Label(rectangle, gc);
+
+
+        }
+
+        public static void renderitem(InteractableItem i)
+        {
+            Renderer[] r = i.GetComponentsInChildren<Renderer>();
+
+            foreach (Renderer re in r)
+            {
+                Shader shader = Shader.Find("Hidden/Internal-Colored");
+                Material mat = new Material(shader);
+
+                Color raritycolour = ItemTool.getRarityColorHighlight(i.asset.rarity);
+
+                mat.SetColor("_Color", raritycolour);
+                mat.renderQueue = 4000;
+                mat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+                mat.SetInt("_ZWrite", 0);
+                mat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+                re.material = mat;
+            }
+        }
+
+        public static void drawplayerlabel(Player p)
+        {
+            Vector3 playerpos = p.gameObject.transform.position;
+            //offset the y position since the transform is at their feet
+            playerpos.y = playerpos.y + 2.5f;
+            Vector3 pos = Camera.main.WorldToScreenPoint(playerpos);
+            //check if the label is "behind" the camera
+            //if so, do not render!
+            if (pos.z < 0)
+            {
+                return;
+            }
+
+            GUI.color = Color.magenta;
+            //get distance from other player to us
+            var dist = Vector3.Distance(playerpos, Player.player.transform.position);
+
+            //basic setup to draw a label
+            GUIContent gc = new GUIContent(p.name + "\n" + Math.Round(dist, 2) + "m\n");
+            GUIStyle gs = GUI.skin.label;
+            gs.alignment = TextAnchor.MiddleCenter;
+            gs.fontSize = 14;
+            Vector2 size = gs.CalcSize(gc);
+
+            //flip y coords since WorldToScreenPoint generates the y coordinate upside down
+            pos.y = Screen.height - pos.y;
+
+            Rect rectangle = new Rect(pos.x - size.x / 2, pos.y, size.x, size.y);
+
+            GUI.Label(rectangle, gc);
+
+        }
+
+        public static void renderplayer(Player p)
+        {
+            Renderer[] r = p.GetComponentsInChildren<Renderer>();
+
+            foreach (Renderer re in r)
+            {
+                Shader shader = Shader.Find("Hidden/Internal-Colored");
+                Material mat = new Material(shader);
+
+                mat.SetColor("_Color", Color.cyan);
+                mat.renderQueue = 4000;
+                mat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+                mat.SetInt("_ZWrite", 0);
+                mat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+                re.material = mat;
+            }
         }
     }
 }
