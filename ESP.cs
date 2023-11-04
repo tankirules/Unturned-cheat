@@ -184,27 +184,49 @@ namespace Unturned_Cheat
         }
         public static void rendervehicle(InteractableVehicle v)
         {
-            Renderer[] r = v.GetComponentsInChildren<Renderer>();
-            //File.AppendAllText("UC.txt", "num of renderer for vehicle: " + r.Length + "\n");
-            foreach (Renderer re in r)
+
+            //Renderer[] r = v.GetComponentsInChildren<Renderer>();
+            ////File.AppendAllText("UC.txt", "num of renderer for vehicle: " + r.Length + "\n");
+            //foreach (Renderer re in r)
+            //{
+            //    Shader shader = Shader.Find("Hidden/Internal-Colored");
+            //    Material mat = new Material(shader);
+            //    mat.SetColor("_Color", Color.green);
+            //    mat.renderQueue = 4000;
+            //    mat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+            //    mat.SetInt("_ZWrite", 0);
+            //    mat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+            //    re.material = mat;
+            //}
+
+            //var rp = v.GetComponent<Renderer>();
+            //var rt = v.transform.GetComponent<Renderer>();
+            //File.AppendAllText("UC.txt", "rp is n " + (rp == null) + " and rt is n " + (rt == null) + "\n");
+            //foreach (Transform child in v.transform)
+            //{
+            //    File.AppendAllText("UC.txt", child.name + " is n " + (child.GetComponent<Renderer>() == null) + "\n");
+            //}
+
+            foreach (Transform t in v.transform)
             {
-                Shader shader = Shader.Find("Hidden/Internal-Colored");
-                Material mat = new Material(shader);
-                mat.SetColor("_Color", Color.green);
-                mat.renderQueue = 4000;
-                mat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
-                mat.SetInt("_ZWrite", 0);
-                mat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
-                re.material = mat;
+                if (t.name == "Model_0")
+                {
+                    Renderer re = t.GetComponent<Renderer>();
+                    Shader shader = Shader.Find("Hidden/Internal-Colored");
+                    Material mat = new Material(shader);
+                    mat.SetColor("_Color", Color.green);
+                    mat.renderQueue = 4000;
+                    mat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+                    mat.SetInt("_ZWrite", 0);
+                    mat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+                    re.material = mat;
+
+                }
             }
 
-            var rp = v.GetComponent<Renderer>();
-            var rt = v.transform.GetComponent<Renderer>();
-            File.AppendAllText("UC.txt", "rp is n " + (rp == null) + " and rt is n " + (rt == null) + "\n");
-            foreach (Transform child in v.transform)
-            {
-                File.AppendAllText("UC.txt", child.name + " is n " + (child.GetComponent<Renderer>() == null) + "\n");
-            }
+            //testing
+
+
 
                 
         }
