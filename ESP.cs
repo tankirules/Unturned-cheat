@@ -331,5 +331,37 @@ namespace Unturned_Cheat
                 re.material = mat;
             }
         }
+
+        public static void zombietracer(Zombie z)
+        {
+            //basic material/shader setup
+            Shader shader = Shader.Find("Hidden/Internal-Colored");
+            Material mat = new Material(shader);
+            //mat.SetColor("_Color", new Color32(115, 135, 105, 255));
+            mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            mat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+            mat.SetInt("_ZWrite", 0);
+            mat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+
+            //setup zombie coordinates
+            Vector3 zombiepos = z.gameObject.transform.position;
+            //offset the y position since the gameobject is at their feet
+            zombiepos.y = zombiepos.y + 2.5f;
+            Vector3 pos = Camera.main.WorldToScreenPoint(zombiepos);
+            //flip the y position 
+            pos.y = Screen.height - pos.y;
+
+            //Low level graphics rendering I don't fully understand
+            mat.SetPass(0);
+            GL.PushMatrix();
+            GL.Begin(GL.LINES);
+            GL.Color(new Color32(115, 135, 105, 255));
+            GL.Vertex3(pos.x,pos.y, 0f);
+            GL.Vertex3(Screen.width / 2, Screen.height / 2, 0f);
+            GL.End();
+            GL.PopMatrix();
+
+        }
     }
 }
