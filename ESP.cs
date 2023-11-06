@@ -118,8 +118,9 @@ namespace Unturned_Cheat
                 highlighter = z.transform.gameObject.AddComponent<Highlighter>();
             }
             highlighter.ConstantOn(Color.yellow);
-            //highlighter.occluder = true;
-            //highlighter.overlay = true;
+            //these two settings make the highlight render through walls
+            highlighter.occluder = true;
+            highlighter.overlay = true;
 
             //try to cheese the higlighter render?
             //Renderer[] stupidr = highlighter.GetComponentsInChildren<Renderer>();
@@ -153,6 +154,8 @@ namespace Unturned_Cheat
 
             //get vehicle name and position
             Vector3 vpos = v.transform.position;
+            //offset vpos since it is at the "floor" of the vehicle
+            vpos.y = vpos.y + 2.5f;
             String vname = v.asset.vehicleName;
 
             //translate vehicle position to screen coordinates
@@ -166,8 +169,8 @@ namespace Unturned_Cheat
             }
 
             //set GUI colouor and content
-            GUI.color = Color.black;
-            GUIContent gc = new GUIContent("Vehicle: " + v.asset.vehicleName);
+            GUI.color = Color.red;
+            GUIContent gc = new GUIContent("Vehicle: " + vname);
 
             GUIStyle gs = GUI.skin.label;
             gs.alignment = TextAnchor.MiddleCenter;
@@ -330,10 +333,35 @@ namespace Unturned_Cheat
                 mat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
                 re.material = mat;
             }
+
+            //draw a highlight outline around the player
+            Highlighter highlighter = p.transform.GetComponent<Highlighter>();
+            if (highlighter == null)
+            {
+                highlighter = p.transform.gameObject.AddComponent<Highlighter>();
+            }
+            highlighter.ConstantOn(Color.red);
+            //these two settings make the highlight render through walls
+            highlighter.occluder = true;
+            highlighter.overlay = true;
         }
 
         public static void zombietracer(Zombie z)
         {
+            //setup zombie coordinates
+            Vector3 zombiepos = z.gameObject.transform.position;
+            //offset the y position since the gameobject is at their feet
+            zombiepos.y = zombiepos.y + 2.5f;
+            Vector3 pos = Camera.main.WorldToScreenPoint(zombiepos);
+            //flip the y position 
+            pos.y = Screen.height - pos.y;
+
+            if (pos.z < 0)
+            {
+                return;
+            }
+
+
             //basic material/shader setup
             Shader shader = Shader.Find("Hidden/Internal-Colored");
             Material mat = new Material(shader);
@@ -344,13 +372,7 @@ namespace Unturned_Cheat
             mat.SetInt("_ZWrite", 0);
             mat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
 
-            //setup zombie coordinates
-            Vector3 zombiepos = z.gameObject.transform.position;
-            //offset the y position since the gameobject is at their feet
-            zombiepos.y = zombiepos.y + 2.5f;
-            Vector3 pos = Camera.main.WorldToScreenPoint(zombiepos);
-            //flip the y position 
-            pos.y = Screen.height - pos.y;
+            
 
             //Low level graphics rendering I don't fully understand
             mat.SetPass(0);
@@ -363,5 +385,7 @@ namespace Unturned_Cheat
             GL.PopMatrix();
 
         }
+
+
     }
 }

@@ -8,7 +8,6 @@ using System.Collections;
 using System.IO;
 using JetBrains.Annotations;
 using UnityEngine.UI;
-using HarmonyLib;
 using HighlightingSystem;
 
 namespace Unturned_Cheat
@@ -24,6 +23,7 @@ namespace Unturned_Cheat
         public float zombiedistance = 60;
         public float vehicledistance = 120;
         public float itemdistance = 60;
+        public float commonitemdistance = 20;
 
         void Awake()
         {
@@ -64,6 +64,7 @@ namespace Unturned_Cheat
                 {
                     ESP.drawzombielabel(z);
                     ESP.renderzombie(z);
+                    ESP.zombietracer(z);
                 }
 
                 //draw vehicles
@@ -80,9 +81,20 @@ namespace Unturned_Cheat
                     {
                         continue;
                     }
-                    ESP.drawitemlabel(i);
+
+                    //only render label if item is extremely close
+                    //guns and rare items also get labels further down
+                    Vector2 itempos = i.transform.position;
+                    Vector2 playerpos = Player.player.transform.position;
+                    if (Vector2.Distance(itempos, playerpos) <= commonitemdistance) {
+                        ESP.drawitemlabel(i);
+                    }
+
+                    
+
                     if (i.asset.rarity >= EItemRarity.RARE || i.asset.type == EItemType.GUN)
                     {
+                        ESP.drawitemlabel(i);
                         ESP.renderitem(i);
                     }
                     
