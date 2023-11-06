@@ -360,8 +360,12 @@ namespace Unturned_Cheat
             {
                 return;
             }
+            drawtracer(new Color32(115, 135, 105, 255), pos);
 
+        }
 
+        public static void drawtracer(Color colour, Vector3 pos)
+        {
             //basic material/shader setup
             Shader shader = Shader.Find("Hidden/Internal-Colored");
             Material mat = new Material(shader);
@@ -372,19 +376,54 @@ namespace Unturned_Cheat
             mat.SetInt("_ZWrite", 0);
             mat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
 
-            
+
 
             //Low level graphics rendering I don't fully understand
             mat.SetPass(0);
             GL.PushMatrix();
             GL.Begin(GL.LINES);
-            GL.Color(new Color32(115, 135, 105, 255));
-            GL.Vertex3(pos.x,pos.y, 0f);
+            GL.Color(colour);
+            GL.Vertex3(pos.x, pos.y, 0f);
             GL.Vertex3(Screen.width / 2, Screen.height / 2, 0f);
             GL.End();
             GL.PopMatrix();
-
         }
+
+        public static void itemtracer(InteractableItem i)
+        {
+
+            Vector3 itempos = i.gameObject.transform.position;
+            //get equivalent coordinates on screenspace
+            Vector3 pos = Camera.main.WorldToScreenPoint(itempos);
+            //flip the y position 
+            pos.y = Screen.height - pos.y;
+            //don't render if point is behind us
+            if (pos.z < 0)
+            {
+                return;
+            }
+
+            Color raritycolour = ItemTool.getRarityColorHighlight(i.asset.rarity);
+            drawtracer(raritycolour, pos);
+        }
+
+        public static void playertracer(Player p)
+        {
+            Vector3 playerpos = p.gameObject.transform.position;
+            //offset the y position since the transform is at their feet
+            playerpos.y = playerpos.y + 2.5f;
+            Vector3 pos = Camera.main.WorldToScreenPoint(playerpos);
+            //flip the y position 
+            pos.y = Screen.height - pos.y;
+            //check if the label is "behind" the camera
+            //if so, do not render!
+            if (pos.z < 0)
+            {
+                return;
+            }
+            drawtracer(Color.cyan, pos);
+        }
+       
 
 
     }

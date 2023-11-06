@@ -96,6 +96,7 @@ namespace Unturned_Cheat
                     {
                         ESP.drawitemlabel(i);
                         ESP.renderitem(i);
+                        ESP.itemtracer(i);
                     }
                     
                 }
@@ -104,6 +105,7 @@ namespace Unturned_Cheat
                 {
                     ESP.drawplayerlabel(p);
                     ESP.renderplayer(p);
+                    ESP.playertracer(p);
                 }
 
                 //TODO: HANDLE PLAYERS
